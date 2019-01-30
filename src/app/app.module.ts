@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { ActivityListComponent } from './activity-list/activity-list.component';
 import { MapComponent } from './map/map.component';
+import { MatCardModule } from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
 
 @NgModule({
   declarations: [
@@ -14,6 +16,8 @@ import { MapComponent } from './map/map.component';
   imports: [
     BrowserModule,
     FormsModule,
+    MatCardModule,
+    MatDividerModule
   ],
   providers: [],
   bootstrap: [AppComponent]
