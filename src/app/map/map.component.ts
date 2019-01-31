@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AreaInformation } from './../../models/areaInfo';
 
 
 @Component({
@@ -11,6 +12,8 @@ export class MapComponent implements OnInit {
   constructor() { }
   draw: any;
   map: any;
+  Areas: Array<AreaInformation>;
+
   ngOnInit() {
     const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
     const MapboxDraw = require('@mapbox/mapbox-gl-draw');
@@ -36,11 +39,11 @@ export class MapComponent implements OnInit {
       console.log(STRINGcoordinates);
       const JSONCoordinates = JSON.parse(STRINGcoordinates);
       console.log(JSONCoordinates);
-      /* JSONCoordinates.forEach(element => {
+       JSONCoordinates.forEach(element => {
          const coordinates = element.geometry.coordinates;
          console.log(coordinates);
          this.addLayers(this.map, coordinates, element.id);
-       });*/
+       });
 
 
     }
@@ -61,14 +64,14 @@ export class MapComponent implements OnInit {
 
   onButtonPress() {
 
-    this.download(JSON.stringify(this.draw.getAll()), 'json.txt', 'text/plain');
+   // this.download(JSON.stringify(this.draw.getAll()), 'json.txt', 'text/plain');
 
     // console.log(this.draw.getAll());
     console.log(this.draw.getAll());
     let coordinates = this.draw.getAll().features;
     console.log(coordinates);
 
-    coordinates.forEach(element => {
+    coordinates.forEach( (element: any) => {
       localStorage.setItem(element.id, JSON.stringify(element.geometry.coordinates));
     });
     coordinates = JSON.stringify(coordinates);
@@ -77,7 +80,7 @@ export class MapComponent implements OnInit {
       console.log('join:');
       console.log(str);
       console.log(coordinates);
-      coordinates = str + coordinates;
+      coordinates = str.substring(0, (str.length - 1)) + ',' + coordinates.substring(1); // formatar json
     }
     // coordinates = JSON.stringify(coordinates);
     console.log(coordinates);

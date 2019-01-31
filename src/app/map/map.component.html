@@ -4,8 +4,12 @@
         <button (click)="seeLocalStorage()">Local Storage</button>
         <button (click)="clearLocalStorage()">Clear Local Storage</button>
     </div>
+    <div *ngFor="let name of coordinates">
+        {{name}}
+    </div>
 <br>
     <div id="map" style="width:500px; height: 500px;"></div>
     sadka
+
 
 </div>
