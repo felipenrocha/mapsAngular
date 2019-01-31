@@ -20,135 +20,79 @@ export class MapComponent implements OnInit {
       container: 'map',
       style: 'mapbox://styles/mapbox/navigation-guidance-day-v2',
       center: [-47.82972222, -15.7779], // brasilia
-      zoom: 9,
+      zoom: 12,
       color: 'red'
     });
     this.draw = new MapboxDraw({
-      displayControlsDefault: true,
+      displayControlsDefault: false,
       controls: {
         polygon: true,
         trash: true
-      },
-      styles: [
-        // ACTIVE (being drawn)
-        // line stroke
-        {
-          "id": "gl-draw-line",
-          "type": "line",
-          "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
-          "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-          },
-          "paint": {
-            "line-color": "#D20C0C",
-            "line-dasharray": [0.2, 2],
-            "line-width": 2
-          }
-        },
-        // polygon fill
-        {
-          "id": "gl-draw-polygon-fill",
-          "type": "fill",
-          "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
-          "paint": {
-            "fill-color": "#D20C0C",
-            "fill-outline-color": "#D20C0C",
-            "fill-opacity": 0.1
-          }
-        },
-        // polygon outline stroke
-        // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
-        {
-          "id": "gl-draw-polygon-stroke-active",
-          "type": "line",
-          "filter": ["all", ["==", "$type", "Polygon"], ["!=", "mode", "static"]],
-          "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-          },
-          "paint": {
-            "line-color": "#D20C0C",
-            "line-dasharray": [0.2, 2],
-            "line-width": 2
-          }
-        },
-        // vertex point halos
-        {
-          "id": "gl-draw-polygon-and-line-vertex-halo-active",
-          "type": "circle",
-          "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
-          "paint": {
-            "circle-radius": 5,
-            "circle-color": "#FFF"
-          }
-        },
-        // vertex points
-        {
-          "id": "gl-draw-polygon-and-line-vertex-active",
-          "type": "circle",
-          "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
-          "paint": {
-            "circle-radius": 3,
-            "circle-color": "#D20C0C",
-          }
-        },
-
-        // INACTIVE (static, already drawn)
-        // line stroke
-        {
-          "id": "gl-draw-line-static",
-          "type": "line",
-          "filter": ["all", ["==", "$type", "LineString"], ["==", "mode", "static"]],
-          "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-          },
-          "paint": {
-            "line-color": "#000",
-            "line-width": 3
-          }
-        },
-        // polygon fill
-        {
-          "id": "gl-draw-polygon-fill-static",
-          "type": "fill",
-          "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
-          "paint": {
-            "fill-color": "#000",
-            "fill-outline-color": "#000",
-            "fill-opacity": 0.1
-          }
-        },
-        // polygon outline
-        {
-          "id": "gl-draw-polygon-stroke-static",
-          "type": "line",
-          "filter": ["all", ["==", "$type", "Polygon"], ["==", "mode", "static"]],
-          "layout": {
-            "line-cap": "round",
-            "line-join": "round"
-          },
-          "paint": {
-            "line-color": "#000",
-            "line-width": 3
-          }
-        }
-      ]
+      }
     });
     this.map.addControl(this.draw, 'top-left');
-    this.addLayers(this.map);
-  }
+    if (localStorage.getItem('GEOJson')) {
+      const STRINGcoordinates = localStorage.getItem('GEOJson');
+      console.log(STRINGcoordinates);
+      const JSONCoordinates = JSON.parse(STRINGcoordinates);
+      console.log(JSONCoordinates);
+      /* JSONCoordinates.forEach(element => {
+         const coordinates = element.geometry.coordinates;
+         console.log(coordinates);
+         this.addLayers(this.map, coordinates, element.id);
+       });*/
 
+
+    }
+  }
+  seeLocalStorage() {
+    console.log(localStorage);
+  }
+  clearLocalStorage() {
+    localStorage.clear();
+  }
+  download(content, fileName, contentType) {
+    const a = document.createElement('a');
+    const file = new Blob([content], { type: contentType });
+    a.href = URL.createObjectURL(file);
+    a.download = fileName;
+    a.click();
+  }
 
   onButtonPress() {
+
+    this.download(JSON.stringify(this.draw.getAll()), 'json.txt', 'text/plain');
+
+    // console.log(this.draw.getAll());
     console.log(this.draw.getAll());
+    let coordinates = this.draw.getAll().features;
+    console.log(coordinates);
+
+    coordinates.forEach(element => {
+      localStorage.setItem(element.id, JSON.stringify(element.geometry.coordinates));
+    });
+    coordinates = JSON.stringify(coordinates);
+    if (localStorage.getItem('GEOJson')) {
+      const str = localStorage.getItem('GEOJson');
+      console.log('join:');
+      console.log(str);
+      console.log(coordinates);
+      coordinates = str + coordinates;
+    }
+    // coordinates = JSON.stringify(coordinates);
+    console.log(coordinates);
+
+    localStorage.setItem('GEOJson', coordinates);
   }
 
-  addLayers(map: any) {
+  addLayers(map: any, coordinates: any, element: string) {
+
+    const color = '#DD0000';
+
+
     map.on('load', function () {
       map.addLayer({
-        'id': 'maine',
+        'id': element,
         'type': 'fill',
         'source': {
           'type': 'geojson',
@@ -156,7 +100,8 @@ export class MapComponent implements OnInit {
             'type': 'Feature',
             'geometry': {
               'type': 'Polygon',
-              'coordinates': [[[-67.13734351262877, 45.137451890638886],
+              'coordinates': coordinates
+              /*[[[-67.13734351262877, 45.137451890638886],
               [-66.96466, 44.8097],
               [-68.03252, 44.3252],
               [-69.06, 43.98],
@@ -175,14 +120,14 @@ export class MapComponent implements OnInit {
               [-68.23430497910454, 47.35462921812177],
               [-67.79035274928509, 47.066248887716995],
               [-67.79141211614706, 45.702585354182816],
-              [-67.13734351262877, 45.137451890638886]]]
+              [-67.13734351262877, 45.137451890638886]]]*/
             }
           }
         },
         'layout': {},
         'paint': {
-          'fill-color': '#088',
-          'fill-opacity': 0.8
+          'fill-color': color,
+          'fill-opacity': 0.4
         }
       });
     });
