@@ -1,34 +1,7 @@
-.map {
-    position: fixed;
-    top: 20%;
-    left: 35%;
-
-    
-}
-.title {
-    position: fixed;
-    width: 100px;
-    height: 50px;
-    top: 7%;
-    left: 50%;
-    margin-left: -50px; /* margin is -0.5 * dimension */
-    margin-top: -25px; 
-}
-.title-container {
-    text-align: center;
-    align-content: center;
-    align-items: center;
+ 
+.title  {
     align-self: center;
+    text-align: center;
+    margin: 0 auto;
 }
-.subtitle {
-    position: fixed;
-    width: 100px;
-    height: 50px;
-    top: 9%;
-    left: 50%;
-    margin-left: -50px; /* margin is -0.5 * dimension */
-    margin-top: -25px; 
-}
-mat-card-content {
-    margin-top: 15px;
-}
+

@@ -1,0 +1,16 @@
+<div>
+    <mat-grid-list cols="5" rowHeight="100px">
+        <mat-grid-tile colspan="4" rowspan="6">
+            <div id="map"></div>
+        </mat-grid-tile>
+        <mat-grid-tile cols="1" rowspan="1">
+            <mat-select placeholder="Selecione uma cor" (selectionChange)="changeColor()">
+                <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
+                    (onSelectionChange)="changeColor(color.value)">
+                    {{color.color}}
+                </mat-option>
+            </mat-select>
+        </mat-grid-tile>
+    </mat-grid-list>
+
+</div>

@@ -16,7 +16,7 @@ export class MapComponent implements OnInit {
 
   ngOnInit() {
     const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js');
-    const MapboxDraw = require('@mapbox/mapbox-gl-draw');
+   // const MapboxDraw = require('@mapbox/mapbox-gl-draw');
 
     mapboxgl.accessToken = 'pk.eyJ1IjoiZmVsaXBlbnJvY2hhIiwiYSI6ImNqcmdqMGF1MTFvM3ozeWxweDNicDU5eWUifQ.3RTgEndlcpmgIvCjguuY7A';
     this.map = new mapboxgl.Map({
@@ -26,13 +26,13 @@ export class MapComponent implements OnInit {
       zoom: 12,
       color: 'red'
     });
-    this.draw = new MapboxDraw({
+  /*  this.draw = new MapboxDraw({
       displayControlsDefault: false,
       controls: {
         polygon: true,
         trash: true
       }
-    });
+    });*/
     this.map.addControl(this.draw, 'top-left');
     if (localStorage.getItem('GEOJson')) {
       const STRINGcoordinates = localStorage.getItem('GEOJson');
