@@ -13,7 +13,7 @@ require("firebase/database");
 
 function loadPolygons(polygon) {
   // console.log(polygon);
-
+  let c: boolean;
   var newPolygon = new google.maps.Polygon({
     paths: polygon['coordinates'],
     strokeColor: '#000000',
@@ -23,14 +23,37 @@ function loadPolygons(polygon) {
     fillOpacity: 0.6
   });
   newPolygon.setMap(map);
-  newPolygon.addListener('click', function(polygon){
-    let c = confirm("Deseja apagar o Polígono?");
-    if(c){
-     // firebase.database().ref('/Polygons').remove();
+  newPolygon.addListener('click', function (polygonold) {
+    c = confirm("Deseja apagar o Polígono?");
+    if (c) {
+      removePolygon(polygon);// firebase.database().ref('/Polygons').remove();
       newPolygon.setMap(null);
+
     }
   });
+  if (c) {
+    console.log('in');
 
+  }
+
+}
+
+function removePolygon(polygon) {
+  var polygonsRef = firebase.database().ref('/Polygons');
+
+  polygonsRef.on('value', function (snapshot) {
+
+    snapshot.forEach(element => {
+      console.log(element.val()['coordinates']);
+      console.log(polygon['coordinates']);
+      if (JSON.stringify(element.val()['coordinates']) === JSON.stringify(polygon['coordinates'])) {
+        console.log('achado');
+        polygonsRef.child(element.key).remove();
+        //element.getKey();
+      }
+
+    });
+  });
 }
 
 let map: google.maps.Map;
@@ -95,30 +118,39 @@ export class GoogleMapComponent implements OnInit {
 
       }
     });
+
+
     this.drawingManager.setMap(map);
     google.maps.event.addDomListener(this.drawingManager, 'polygoncomplete', function (polygon) {
-      console.log(polygon.fillColor);
       if (polygon.fillColor !== "#FFFFFFF") {
         const confirmacao = confirm('Deseja salvar essa região?');
 
 
         if (confirmacao) {
+          let Polygon: Polygon = {
+            color: polygon.fillColor,
+            coordinates: []
+          };
           let coordStr: string = '{"color": "' + polygon.fillColor + '", "coordinates": [';
           for (var i = 0; i < polygon.getPath().getLength(); i++) {
-            coordStr += polygon.getPath().getAt(i).toString().replace(',', ', "lng":');
-            coordStr = coordStr.replace('(', '{ "lat": ');
-            coordStr = coordStr.replace(')', ' }');
-
-            if (i + 1 < polygon.getPath().getLength()) {
-              coordStr += ',';
-            }
+            Polygon.coordinates.push({
+              lat: polygon.getPath().getAt(i).lat(),
+              lng: polygon.getPath().getAt(i).lng()
+            });
+            /*  coordStr += polygon.getPath().getAt(i).toString().replace(',', ', "lng":');
+              coordStr = coordStr.replace('(', '{ "lat": ');
+              coordStr = coordStr.replace(')', ' }');
+  
+              if (i + 1 < polygon.getPath().getLength()) {
+                coordStr += ',';
+              }*/
           }
-          coordStr = coordStr + '] }';
-          console.log(coordStr);
-          firebase.database().ref('/Polygons').push((JSON.parse(coordStr)));
-          // firebase.database().ref('/Polygons').push((JSON.parse(coordStr)));
-          // services.setData((JSON.parse(coordStr)));
-          // localStorage.setItem('Polygon', coordStr);
+          console.log(Polygon);
+          //  coordStr = coordStr + '] }';
+
+          firebase.database().ref('/Polygons').push(Polygon);
+
+
         } else {
           polygon.setMap(null);
         }
@@ -133,11 +165,47 @@ export class GoogleMapComponent implements OnInit {
     this.polygonsRef
       .on('value', function (snapshot) {
         snapshot.forEach(element => {
-          console.log(element.val()['coordinates']);
+          //console.log(element.val()['coordinates']);
           loadPolygons(element.val());
         });
       });
-  }
+
+    var input = (document.getElementById('map-input') as HTMLInputElement);
+    var searchBox = new google.maps.places.SearchBox(input);
+    
+
+    map.addListener('bounds_changed', function () {
+      searchBox.setBounds(map.getBounds());
+    });
+
+    searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+     // console.log(places);
+      if (places.length == 0) {
+        return;
+      }
+      var bounds = new google.maps.LatLngBounds();
+
+    
+    places.forEach(function(place) {
+      if (!place.geometry) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+    });
+    map.fitBounds(bounds);
+  });
+
+}
+    
+  
+  
 
   changeColor(color: string) {
     this.drawingManager.setOptions({
@@ -146,7 +214,6 @@ export class GoogleMapComponent implements OnInit {
         fillOpacity: 0.6,
         strokeWeight: 1.5
       }
-
     });
 
   }

@@ -15,6 +15,7 @@ import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 import { HttpClientModule } from "@angular/common/http";
 import { GetCoordinatesService } from './get-coordinates.service';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { GetCoordinatesService } from './get-coordinates.service';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
+    MatInputModule
   ],
   providers: [GetCoordinatesService],
   bootstrap: [AppComponent]

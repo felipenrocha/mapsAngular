@@ -4,13 +4,37 @@
             <div id="map"></div>
         </mat-grid-tile>
         <mat-grid-tile cols="1" rowspan="1">
-            <mat-select placeholder="Selecione uma cor" (selectionChange)="changeColor()">
+
+
+            <mat-select placeholder="Selecione uma cor" (selectionChange)="changeColor()" class="select">
                 <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
                     (onSelectionChange)="changeColor(color.value)">
                     {{color.color}}
                 </mat-option>
             </mat-select>
+
+
+
         </mat-grid-tile>
+        <mat-grid-tile cols="2" rowspan="1">
+            <mat-card class="example-form">
+                <mat-card-title style="font-size: 15px; margin-bottom: 2px;">
+                    Search Box Places
+                </mat-card-title>
+                <mat-card-content class="example-full-width">
+                    <form class="example-form">
+                        <mat-form-field class="example-full-width">
+                            <input matInput placeholder="Localização" id="map-input" type="text">
+                        </mat-form-field>
+                    </form>
+                </mat-card-content>
+            </mat-card>
+
+
+
+
+        </mat-grid-tile>
+
     </mat-grid-list>
 
 </div>
