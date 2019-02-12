@@ -1,40 +1,25 @@
-<div>
-    <mat-grid-list cols="5" rowHeight="100px">
-        <mat-grid-tile colspan="4" rowspan="6">
-            <div id="map"></div>
-        </mat-grid-tile>
-        <mat-grid-tile cols="1" rowspan="1">
+<div style="padding: 15px">
 
 
-            <mat-select placeholder="Selecione uma cor" (selectionChange)="changeColor()" class="select">
-                <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
-                    (onSelectionChange)="changeColor(color.value)">
-                    {{color.color}}
-                </mat-option>
-            </mat-select>
+    <div id="map"></div>
 
-
-
-        </mat-grid-tile>
-        <mat-grid-tile cols="2" rowspan="1">
-            <mat-card class="example-form">
-                <mat-card-title style="font-size: 15px; margin-bottom: 2px;">
-                    Search Box Places
-                </mat-card-title>
-                <mat-card-content class="example-full-width">
-                    <form class="example-form">
-                        <mat-form-field class="example-full-width">
-                            <input matInput placeholder="Localização" id="map-input" type="text">
-                        </mat-form-field>
-                    </form>
-                </mat-card-content>
-            </mat-card>
-
-
-
-
-        </mat-grid-tile>
-
-    </mat-grid-list>
-<button (click)="removeButton()" id="HiddenButton" style="display: none">asdad</button>
 </div>
+<div>
+    <mat-card class="example-form" style="margin: 0 auto">
+        <mat-select placeholder="Selecione uma cor para as regiões" (selectionChange)="changeColor()" class="select">
+            <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
+                (onSelectionChange)="changeColor(color.value)" style="text-align: center;">
+                {{color.color}}
+            </mat-option>
+        </mat-select>
+
+        <mat-card-content class="example-full-width">
+            <form class="example-form">
+                <mat-form-field class="example-full-width">
+                    <input matInput placeholder="Procure uma região" id="map-input" type="text">
+                </mat-form-field>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
+<button (click)="removeButton()" id="HiddenButton" style="display: none">asdad</button>
