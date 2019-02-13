@@ -21,3 +21,12 @@ export interface Polygon {
 
 }
 
+export interface AreaInformation {
+  titulo?: string;
+  logadouro?: string;
+  bairro?: string;
+  localidade?: string;
+  CEP?: string;
+  UF?: string;
+}
+

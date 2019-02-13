@@ -16,6 +16,9 @@ import { environment } from '../environments/environment';
 import { HttpClientModule } from "@angular/common/http";
 import { GetCoordinatesService } from './get-coordinates.service';
 import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material/button'
 
 @NgModule({
   declarations: [
@@ -36,9 +39,15 @@ import { MatInputModule } from '@angular/material/input';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
-    MatInputModule
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule
   ],
-  providers: [GetCoordinatesService],
+  providers: [
+    GetCoordinatesService,
+    MatDatepickerModule
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

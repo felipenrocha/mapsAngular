@@ -1,26 +1,30 @@
 #map {
-    height: 350px;
-    width: 750px;
-    margin: 0 auto;
-}
-.select {
-
-    margin: 0 auto;
-
+    height: 450px;
+    width: 900px;
+    z-index: 2;
+    margin: 10px;
+    padding: 15px
 }
 
 .example-form {
-    padding: 15px;
-    margin: 10px;
-    min-width: 150px;
-    max-width: 500px;
+    
     text-align: center;
     width: 100%;
+    float: left;
+
   }
   
   .example-full-width {
-    width: 85%;
+    width: 50%;
     text-align: center;
    
   }
   
+  .form-map {
+
+    
+  }
+  .form-field {
+    
+    width: 350px;
+  }

@@ -2,11 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firebase } from '@firebase/app';
 import '@firebase/database';
-interface Coordinate {
-  lat: number;
-  lng: number;
-}
-
+import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -14,18 +11,18 @@ interface Coordinate {
 export class GetCoordinatesService {
 
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   fetchData() {
 
     var polygonsRef = firebase.database().ref('/Polygons');
-    
-   /* leadsRef.on('value', function (snapshot) {
-      console.log(snapshot.val())
-      r    }); */
     return polygonsRef;
 
 
+  }
+  getInformations(lat: number, lng: number): Observable<Object>{
+     return this.http.get<Object>(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${environment.apiKey}`)
+    
   }
 
   setData(polygon) {

@@ -1,93 +1,12 @@
-
 /// <reference types="@types/googlemaps" />
+import { AreaInformation } from './../models/googleMaps';
 import { Polygon } from './../models/googleMaps';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GetCoordinatesService } from '../get-coordinates.service';
 import { Location, Color } from '../models/googleMaps'
-import { Alert } from 'selenium-webdriver';
-
-
 
 let firebase = require("firebase/app");
 require("firebase/database");
-let c: boolean;
-let currentPolygon: google.maps.Polygon;
-let infoWindow: google.maps.InfoWindow;
-
-let location: Location = {
-  coordinate: {
-    lat: -15.802263609290923,
-    lng: -47.880005836486816,
-  },
-
-  zoom: 14
-};
-
-function loadPolygons(polygon) {
-  // console.log(polygon);
-  google.maps.event.addListener(polygon, 'click', function () {
-    console.log('oi');
-  });
-  infoWindow = new google.maps.InfoWindow;
-
-  var newPolygon = new google.maps.Polygon({
-    paths: polygon['coordinates'],
-    strokeColor: '#000000',
-    strokeOpacity: 0.8,
-    strokeWeight: 0.7,
-    fillColor: polygon['color'],
-    fillOpacity: 0.6
-  });
-  // console.log(newPolygon);
-  newPolygon.setMap(map);
-  newPolygon.addListener('click', function (polygonold) {
-    currentPolygon = new google.maps.Polygon({
-      paths: polygon['coordinates']
-    });
-    location.coordinate.lat = polygonold.latLng.lat();
-    location.coordinate.lng = polygonold.latLng.lng()
-    // console.log(currentPolygon);
-
-    infoWindow.setContent('<div style="margin: 15px">' +
-      '<h3>Informações da Área</h3>' +
-      '<h5>Logadouro: </h5>' +
-      '<h5>Bairro: </h5>' +
-      '<h5>Complemento: </h5>' +
-      '<h5>Localidade: </h5>' +
-      '<h5>UF: </h5>' +
-      '<button type="button" onclick="document.getElementById(\'HiddenButton\').click()">Remover Área</button>' +
-      '<button>Editar Área</button>');
-    infoWindow.setPosition(polygonold.latLng);
-    //  polygonold.setMap(null);
-    infoWindow.open(map);
-
-
-  });
-
-
-}
-
-
-function removePolygon(polygon) {
-  var polygonsRef = firebase.database().ref('/Polygons');
-
-  polygonsRef.on('value', function (snapshot) {
-
-    snapshot.forEach(element => {
-      // console.log(element.val()['coordinates']);
-      // console.log(polygon['coordinates']);
-      if (JSON.stringify(element.val()['coordinates']) === JSON.stringify(polygon['coordinates'])) {
-        // console.log('achado');
-        polygonsRef.child(element.key).remove();
-        // polygon.setMap(null);
-      }
-
-    });
-  });
-}
-
-let map: google.maps.Map;
-
 
 
 @Component({
@@ -96,12 +15,19 @@ let map: google.maps.Map;
   styleUrls: ['./google-map.component.css']
 })
 export class GoogleMapComponent implements OnInit {
-  // @ViewChild('gmap') gmapElement: any;
-
   drawingManager: google.maps.drawing.DrawingManager;
-  color: string = '#00FF00';
   polygonsRef: any;
+  currentPolygon: google.maps.Polygon;
+  infoWindow: google.maps.InfoWindow;
+  map: google.maps.Map;
+  location: Location = {
+    coordinate: {
+      lat: -15.802263609290923,
+      lng: -47.880005836486816,
+    },
 
+    zoom: 14
+  };
 
   colors: Array<Color> = [
     { color: 'Vermelho', value: '#ff4433' },
@@ -117,9 +43,9 @@ export class GoogleMapComponent implements OnInit {
     this.polygonsRef = this.service.fetchData();
 
 
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: { lat: location.coordinate.lat, lng: location.coordinate.lng },
-      zoom: location.zoom
+    this.map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: this.location.coordinate.lat, lng: this.location.coordinate.lng },
+      zoom: this.location.zoom
     });
 
 
@@ -134,14 +60,14 @@ export class GoogleMapComponent implements OnInit {
       },
       polygonOptions: {
         fillColor: '#FFFFFFF',
-        fillOpacity: 0,
+        fillOpacity: 0.4,
         strokeWeight: 1.5
       }
     });
 
 
-    this.drawingManager.setMap(map);
-    google.maps.event.addDomListener(this.drawingManager, 'polygoncomplete', function (polygon) {
+    this.drawingManager.setMap(this.map);
+    google.maps.event.addDomListener(this.drawingManager, 'polygoncomplete', polygon => {
 
       if (polygon.fillColor !== "#FFFFFFF") {
         const confirmacao = confirm('Deseja salvar essa região?');
@@ -168,7 +94,7 @@ export class GoogleMapComponent implements OnInit {
           }
           //  console.log(Polygon);
           //  coordStr = coordStr + '] }';
-
+          console.log(Polygon);
           firebase.database().ref('/Polygons').push(Polygon);
 
 
@@ -184,10 +110,10 @@ export class GoogleMapComponent implements OnInit {
 
 
     this.polygonsRef
-      .on('value', function (snapshot) {
+      .on('value', snapshot => {
         snapshot.forEach(element => {
           //console.log(element.val()['coordinates']);
-          loadPolygons(element.val());
+          let polygon = this.loadPolygons(element.val());
         });
       });
 
@@ -195,11 +121,11 @@ export class GoogleMapComponent implements OnInit {
     var searchBox = new google.maps.places.SearchBox(input);
 
 
-    map.addListener('bounds_changed', function () {
-      searchBox.setBounds(map.getBounds());
+    this.map.addListener('bounds_changed', () => {
+      searchBox.setBounds(this.map.getBounds());
     });
 
-    searchBox.addListener('places_changed', function () {
+    searchBox.addListener('places_changed', () => {
       var places = searchBox.getPlaces();
       // console.log(places);
       if (places.length == 0) {
@@ -208,7 +134,7 @@ export class GoogleMapComponent implements OnInit {
       var bounds = new google.maps.LatLngBounds();
 
 
-      places.forEach(function (place) {
+      places.forEach(place => {
         if (!place.geometry) {
           console.log("Returned place contains no geometry");
           return;
@@ -220,7 +146,7 @@ export class GoogleMapComponent implements OnInit {
           bounds.extend(place.geometry.location);
         }
       });
-      map.fitBounds(bounds);
+      this.map.fitBounds(bounds);
     });
 
   }
@@ -232,7 +158,7 @@ export class GoogleMapComponent implements OnInit {
     this.drawingManager.setOptions({
       polygonOptions: {
         fillColor: color,
-        fillOpacity: 0.6,
+        fillOpacity: 0.4,
         strokeWeight: 1.5
       }
     });
@@ -240,7 +166,7 @@ export class GoogleMapComponent implements OnInit {
   }
   removeButton() {
 
-    c = confirm('Deseja apagar essa região?');
+    var c = confirm('Deseja apagar essa região?');
     if (c) {
       // newPolygon.setMap(null);
       let Polygon: Polygon = {
@@ -248,19 +174,92 @@ export class GoogleMapComponent implements OnInit {
         coordinates: []
       };
 
-      for (var i = 0; i < currentPolygon.getPath().getLength(); i++) {
+      for (var i = 0; i < this.currentPolygon.getPath().getLength(); i++) {
         Polygon.coordinates.push({
-          lat: currentPolygon.getPath().getAt(i).lat(),
-          lng: currentPolygon.getPath().getAt(i).lng()
+          lat: this.currentPolygon.getPath().getAt(i).lat(),
+          lng: this.currentPolygon.getPath().getAt(i).lng()
         });
 
       }
-      removePolygon(Polygon);
+      this.removePolygon(Polygon);
 
-      infoWindow.close();
+      this.infoWindow.close();
       alert('O Mapa será reiniciado para efetuar as atualizações.');
       this.ngOnInit();
     }
 
+  }
+  loadPolygons(polygon): google.maps.Polygon {
+    this.infoWindow = new google.maps.InfoWindow;
+    var newPolygon = new google.maps.Polygon({
+      paths: polygon['coordinates'],
+      strokeColor: '#000000',
+      strokeOpacity: 0.8,
+      strokeWeight: 0.7,
+      fillColor: polygon['color'],
+      fillOpacity: 0.4
+    });
+    newPolygon.setMap(this.map);
+    newPolygon.addListener('click', polygonold => {
+
+      let placeInformations: AreaInformation = {};
+      this.currentPolygon = new google.maps.Polygon({
+        paths: polygon['coordinates']
+      });
+      this.location.coordinate.lat = polygonold.latLng.lat();
+      this.location.coordinate.lng = polygonold.latLng.lng()
+      // console.log(currentPolygon);
+      this.service.getInformations(this.location.coordinate.lat, this.location.coordinate.lng).subscribe(
+        data => {
+          placeInformations = {
+            titulo: data['results'][1]['formatted_address'],
+            logadouro: data['results'][1]['address_components'][0]['long_name'],
+            bairro: data['results'][1]['address_components'][2]['long_name'],
+            localidade: data['results'][1]['address_components'][2]['long_name'],
+            CEP: data['results'][1]['address_components'][5]['long_name'],
+            UF: data['results'][1]['address_components'][3]['long_name']
+          }
+          console.log(placeInformations);
+          console.log(data['results'][0]['address_components']);
+          this.infoWindow.setContent(`<div style="text-align: center">
+          <h5>${placeInformations.titulo}</h5> 
+          <p> <h6>Logadouro:</h6> <span> ${placeInformations.logadouro} </span><p> 
+          <h5>Bairro:${placeInformations.bairro} </h5> 
+          <h5>Localidade: ${placeInformations.localidade} </h5> 
+          <h5>CEP: ${placeInformations.CEP}</h5>
+          <h5>UF: ${placeInformations.UF}</h5>
+          <button type="button" onclick="document.getElementById(\'HiddenButton\').click()">Remover Área</button>
+          </div>`);
+
+        }
+      );
+      console.log(placeInformations);
+
+      this.infoWindow.setPosition(polygonold.latLng);
+      //  polygonold.setMap(null);
+      this.infoWindow.open(this.map);
+
+
+    });
+    return newPolygon;
+
+
+  }
+  removePolygon(polygon) {
+    var polygonsRef = firebase.database().ref('/Polygons');
+
+    polygonsRef.on('value', snapshot => {
+
+      snapshot.forEach(element => {
+        // console.log(element.val()['coordinates']);
+        // console.log(polygon['coordinates']);
+        if (JSON.stringify(element.val()['coordinates']) === JSON.stringify(polygon['coordinates'])) {
+          // console.log('achado');
+          polygonsRef.child(element.key).remove();
+          // polygon.setMap(null);
+        }
+
+      });
+    });
   }
 }

@@ -15,7 +15,8 @@ export const environment = {
   },
   mapbox: {
     accessToken: 'pk.eyJ1IjoiZmVsaXBlbnJvY2hhIiwiYSI6ImNqcmdtN251dDAxdjAzeXFrNXN5NTlsdTYifQ.-GG_vWBmFDUGb5h9QNNP-w'
-  }
+  },
+  apiKey: 'AIzaSyCo9NxOGZj1InQ19c1XjtzBd6Q69UKNyU0'
 };
 
 /*
