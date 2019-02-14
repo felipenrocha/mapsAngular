@@ -1,60 +1,53 @@
-<mat-grid-list cols="2" rowHeight="225px">|
-    <mat-grid-tile [colspan]="1" [rowspan]="2">
+<mat-grid-list cols="2" rowHeight="600px">|
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
         <div id="map"></div>
     </mat-grid-tile>
-    <mat-grid-tile [colspan]="1" [rowspan]="2">
+    <mat-grid-tile [colspan]="1" [rowspan]="1">
 
         <mat-card>
-        <mat-card-title class="form-field">Cadastro Região</mat-card-title>
-        <mat-card-subtitle>Preencha os campos necessários</mat-card-subtitle>
-        <mat-card-content>
-            <form class="form-map">
-                <mat-form-field class="form-field">
-                    <input matInput placeholder="Nome do usuário" id="map-input" type="text">
-                </mat-form-field>
-                <br>
-                <mat-form-field class="form-field">
-                    <input matInput placeholder="Matrícula" id="map-input" type="text">
-                </mat-form-field>
-                <br>
-                <mat-form-field class="form-field">
-                    <textarea matInput placeholder="Observações"></textarea>
-                </mat-form-field>
-                <br>
-                <mat-form-field class="form-field">
-                    <input matInput [matDatepicker]="picker" placeholder="Data do Cadastro">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
-                <br>
-                <button mat-raised-button color="primary" class="form-field">Enviar</button>
-            </form>
-        </mat-card-content>
-        </mat-card>
-    </mat-grid-tile>
-    
-    <mat-grid-tile [colspan]="2" [rowspan]="1">
-        <mat-card class="example-form">
-            <mat-card-content class="example-full-width">
-                <mat-select placeholder="Selecione uma cor para demarcação de regiões" (selectionChange)="changeColor()"
-                    class="select">
-                    <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
-                        (onSelectionChange)="changeColor(color.value)" style="text-align: center;">
-                        {{color.color}}
-                    </mat-option>
-                </mat-select>
-            </mat-card-content>
+            <mat-card-title class="form-field">Cadastro Região</mat-card-title>
+            <mat-card-subtitle>Preencha os campos necessários</mat-card-subtitle>
+            <mat-card-content>
+                <form class="form-map">
 
-            <mat-card-content class="example-full-width">
-                <form class="example-form">
-                    <mat-form-field class="example-full-width">
+
+                    <mat-form-field class="form-field">
                         <input matInput placeholder="Procure uma região" id="map-input" type="text">
                     </mat-form-field>
+                    <br>
+                    <mat-form-field class="form-field">
+                        <mat-select placeholder="Selecione uma cor para demarcação de regiões" (selectionChange)="changeColor()"
+                            class="select">
+                            <mat-option *ngFor="let color of colors" [value]="color.value" (click)="changeColor(color.value)"
+                                (onSelectionChange)="changeColor(color.value)" style="text-align: center;">
+                                {{color.color}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="form-field">
+                        <input matInput placeholder="Nome do usuário" id="map-input" type="text">
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="form-field">
+                        <input matInput placeholder="Matrícula" id="map-input" type="text">
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="form-field">
+                        <textarea matInput placeholder="Observações"></textarea>
+                    </mat-form-field>
+                    <br>
+                    <mat-form-field class="form-field">
+                        <input matInput [matDatepicker]="picker" placeholder="Data do Cadastro">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <br>
+                    <button mat-raised-button color="primary" class="form-field">Enviar</button>
                 </form>
             </mat-card-content>
         </mat-card>
     </mat-grid-tile>
-
 </mat-grid-list>
 
 <button (click)="removeButton()" id="HiddenButton" style="display: none"></button>

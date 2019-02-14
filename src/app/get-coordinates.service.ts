@@ -15,14 +15,13 @@ export class GetCoordinatesService {
 
   fetchData() {
 
-    var polygonsRef = firebase.database().ref('/Polygons');
+    const polygonsRef = firebase.database().ref('/Polygons');
     return polygonsRef;
 
 
   }
   getInformations(lat: number, lng: number): Observable<Object>{
-     return this.http.get<Object>(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${environment.apiKey}`)
-    
+     return this.http.get<Object>(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${environment.apiKey}`);
   }
 
   setData(polygon) {

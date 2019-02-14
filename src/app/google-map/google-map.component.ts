@@ -119,7 +119,7 @@ export class GoogleMapComponent implements OnInit {
 
     var input = (document.getElementById('map-input') as HTMLInputElement);
     var searchBox = new google.maps.places.SearchBox(input);
-
+    console.log(searchBox);
 
     this.map.addListener('bounds_changed', () => {
       searchBox.setBounds(this.map.getBounds());
@@ -128,7 +128,7 @@ export class GoogleMapComponent implements OnInit {
     searchBox.addListener('places_changed', () => {
       var places = searchBox.getPlaces();
       // console.log(places);
-      if (places.length == 0) {
+      if (places.length === 0) {
         return;
       }
       var bounds = new google.maps.LatLngBounds();
@@ -211,25 +211,50 @@ export class GoogleMapComponent implements OnInit {
       // console.log(currentPolygon);
       this.service.getInformations(this.location.coordinate.lat, this.location.coordinate.lng).subscribe(
         data => {
-          placeInformations = {
-            titulo: data['results'][1]['formatted_address'],
-            logadouro: data['results'][1]['address_components'][0]['long_name'],
-            bairro: data['results'][1]['address_components'][2]['long_name'],
-            localidade: data['results'][1]['address_components'][2]['long_name'],
-            CEP: data['results'][1]['address_components'][5]['long_name'],
-            UF: data['results'][1]['address_components'][3]['long_name']
-          }
+          data['results'].forEach(InfoArea => {
+            InfoArea['address_components'].forEach(mapParameter => {
+              mapParameter['types'].forEach(tipo => {
+                if (tipo === 'postal_code') {
+                  placeInformations.CEP = mapParameter['long_name'];
+                }
+                if (tipo === 'administrative_area_level_1') {
+                  placeInformations.UF = mapParameter['long_name'];
+                }
+                if (tipo === 'sublocality_level_1') {
+                  placeInformations.bairro = mapParameter['long_name'];
+                }
+                if (tipo === 'sublocality_level_2') {
+                  placeInformations.localidade = mapParameter['long_name'];
+                }
+              });
+            });
+          });
           console.log(placeInformations);
-          console.log(data['results'][0]['address_components']);
-          this.infoWindow.setContent(`<div style="text-align: center">
-          <h5>${placeInformations.titulo}</h5> 
-          <p> <h6>Logadouro:</h6> <span> ${placeInformations.logadouro} </span><p> 
-          <h5>Bairro:${placeInformations.bairro} </h5> 
-          <h5>Localidade: ${placeInformations.localidade} </h5> 
-          <h5>CEP: ${placeInformations.CEP}</h5>
-          <h5>UF: ${placeInformations.UF}</h5>
-          <button type="button" onclick="document.getElementById(\'HiddenButton\').click()">Remover Área</button>
-          </div>`);
+          // console.log(data['results'][0]['address_components']);
+          let contentString = `<div style="text-align: center">
+          <h4>Informações da Região</h4>
+          `;
+          if (placeInformations.logadouro) {
+            contentString += `<h5> ${placeInformations.logadouro} </h5>`;
+          }
+          if (placeInformations.bairro) {
+            contentString += `<h5> ${placeInformations.bairro} </h5>`;
+          }
+          if (placeInformations.localidade) {
+            contentString += `<h5> ${placeInformations.localidade} </h5>`;
+          }
+          if (placeInformations.UF) {
+            contentString += `<h5> ${placeInformations.UF} </h5>`;
+          }
+          if (placeInformations.CEP) {
+            contentString += `<h5> ${placeInformations.CEP} </h5>`;
+          }
+          contentString += `
+          <button type="button" onclick="document.getElementById(\'HiddenButton\').click()">
+            Remover Área
+            </button>
+          </div>`;
+          this.infoWindow.setContent(contentString);
 
         }
       );
